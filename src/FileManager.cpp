@@ -370,12 +370,15 @@ void FileManager::handleCommand(const std::string& command) {
 }
 
 void FileManager::changeDirectory(const std::string& folderName) {
+    fs::path inputPath(folderName);
     fs::path newPath;
 
-    if (folderName == "..") {
+    if (inputPath.is_absolute()) {
+        newPath = inputPath;
+    } else if (folderName == "..") {
         newPath = currentPath.parent_path();
     } else {
-        newPath = currentPath / folderName;
+        newPath = currentPath / inputPath;
     }
 
     if (!fs::exists(newPath)) {
@@ -393,7 +396,6 @@ void FileManager::changeDirectory(const std::string& folderName) {
     refreshEntries();
     lastMessage = "";
 }
-
 void FileManager::openTextFile(const std::string& fileName) {
     fs::path filePath = currentPath / fileName;
 
